@@ -89,23 +89,74 @@ const fetchCountries = async () => {
  //fetchCountries();
 
 function showCountries(countriesData) {
-  countryContainer.innerHTML = '';
-
-  countriesData.forEach(country => {
+  const countries = countriesData.data.objects;
+  countryContainer.innerHTML = ''
+  countries.forEach(country => {
     const countryItem = document.createElement('button');
     countryItem.classList.add('country-item');
 
     countryItem.innerHTML = `
-        <img src='${country.flags.png}'>
+        <img src='${country.flag.url_png}' alt='${country.names.common}'>
         <div class='country-info'>
-            <h2 class='country-name'>${country.name}</h2>
-            <p><strong>Population</strong>: ${country.population.toLocaleString()}</p>
+            <h2 class='country-name'>${country.names.common}</h2>
+            <p><strong>Population</strong>: ${country.population}</p>
             <p><strong>Region</strong>: ${country.region}</p>
-            <p><strong>Capital</strong>: ${country.capital}</p>
+            <p><strong>Capital</strong>: ${country.capitals?.[0]?.name ?? 'N/A'}</p>
         </div>
         `;
 
         countryContainer.appendChild(countryItem);
 
+        countryItem.addEventListener('click', () => {
+            countryContainer.style.display = 'none';
+            document.getElementById('country-info'),classList.add('show');
+            showCountryInfo(country)
+        })
   });
 }
+
+function showCountryInfo(selectedCountry) {
+    const countryInfoContainer = document.getElementById('country-info');
+
+    countryInfoContainer.innerHTML = `
+        <button id='backbtn' class='backbtn'><ion-icon name="arrow-back-outline"></ion-icon>Back</button>
+
+        <div class='country-information'>
+          <div class='country-flag'>        
+            <img src='${selectedCountry.flag.png}'>
+          </div>
+
+          <div class='country-details'>
+            <h1>${selectedCountry.name}</h1>
+
+            <ul>
+              <li><strong>Native Name:</strong> ${selectedCountry.nativeName}</li>
+              <li><strong>Population:</strong> ${selectedCountry.population.toLocaleString()}</li>
+              <li><strong>Region:</strong> ${selectedCountry.region}</li>
+              <li><strong>Sub Region:</strong> ${selectedCountry.subregion}</li>
+              <li><strong>Capital:</strong> ${selectedCountry.capital}</li>
+              <li><strong>Top Level Domain:</strong> ${selectedCountry.topLevelDomain[0]}</li> 
+              <li><strong>Currency:</strong> ${selectedCountry.currencies[0].name}</li>
+              <li><strong>Languages:</strong> ${selectedCountry.languages.map(language => language.name).join(' ')}</li>          
+            </ul>
+
+            ${selectedCountry.borders && selectedCountry.borders.length > 0 ?
+              `
+              <div class='country-borders'><strong>Border Countries:</strong> ${selectedCountry.borders.map(country => `<span>${country}</span>`).join(' ')}</div>
+              `:
+              `
+              <div><strong>Border Countries</strong> None</div>
+              `
+            }
+          </div>
+        </div>
+      `
+      const backBtn = countryInfoContainer.querySelector('#backbtn')
+      backBtn.addEventListener('click', () => {
+        countryInfoContainer.innerHTML = '';
+        countryInfoContainer.classList.remove('show')
+        countryContainer.style.display = 'grid'
+      })
+}
+
+fetchCountries()
