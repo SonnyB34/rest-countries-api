@@ -16,7 +16,7 @@
     --bg: hsl(207, 26%, 17%);
     --text: hsl(0, 0%, 100%);
     --elements: hsl(209, 23%, 22%);
-    --input: hsl(0, 0%, 100%);
+    --inputs: hsl(0, 0%, 100%);
 }
 
 img {
@@ -66,4 +66,30 @@ header nav {
 
 main {
     padding: 3rem 0;
+}
+
+.user-inputs .search {
+    background-color: var(--elements);
+    box-shadow: 0 0 5px var(--inputs);
+    outline: 1px solid var(--bg);
+    border-radius: .25rem;
+    padding: 0 1rem;
+}
+
+ #search-input, select#filter-input {
+    background-color: var(--elements);
+    color: var(--text);
+    padding: .75rem;
+}
+
+.user-inputs #search-input {
+    width: 400px;
+    border: 0;
+    outline: 0;
+}
+
+select#fliter-input {
+    box-shadow: 0 0 5px var(--inputs);
+    border: 0;
+    outline: 1px solid var(--bg);
 }

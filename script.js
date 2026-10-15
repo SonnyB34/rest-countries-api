@@ -30,7 +30,7 @@ darkBtn.addEventListener('click', () => {
 const countryContainer = document.getElementById('countries-container');
 const inputSearch = document.getElementById('search-input');
 const filterRegion = document.getElementById('filter-input');
-let everyCountry = [];
+let everyCountry = []
 
 inputSearch.addEventListener('input', updateCountry);
 filterRegion.addEventListener('change', updateCountry);
@@ -43,16 +43,15 @@ function getRegionFilter() {
   return filterRegion.value;
 }
 
-function searchResults(countryInfo, searchQuery) {
-  return countryInfo.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery),
-  );
+function searchResults(countryInfo, term) {
+ const t = term.toLowerCase().trim();
+ return countryInfo.filter(c => c.names.common.toLowerCase().includes(t))
+  
 }
 
 function filterResults(countryInfo, filterOption) {
-  return countryInfo.filter((item) =>
-    item.region.toLowerCase().includes(filterOption.toLowerCase().trim()),
-  );
+ const region = filterOption.toLowerCase().trim();
+ return countryInfo.filter(item => !region || item.region?.toLowerCase() === region)
 }
 
 function updateCountry() {
@@ -64,32 +63,35 @@ function updateCountry() {
   showCountries(searchedResults);
 }
 
+
 const fetchCountries = async () => {
-  const url = 'https://api.restcountries.com/countries/v5'; // swap in the URL from your working curl
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${api_Key}`,
-        'Content-Type': 'application/json',
-      },
+ const url = 'https://api.restcountries.com/countries/v5';
+ try {
+  let offset = 0;
+  let more = true;
+  everyCountry = [];
+
+  while (more) {
+    const response = await fetch(`${url}?limit=100&offset=${offset}`, {
+      headers: { Authorization: `Bearer ${api_Key}` },
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    everyCountry = data;
-    showCountries(data);
-  } catch (error) {
-    console.error('Error fetching country data:', error);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
   }
-
-};
+  const json = await response.json();
+  everyCountry.push(...json.data.objects);
+  more = json.data.meta.more;
+  offset += 100;
+ }
+ updateCountry();
+} catch (error) {
+  console.error('Error fetching country data:', error);
+}
+}
  //fetchCountries();
 
-function showCountries(countriesData) {
-  const countries = countriesData.data.objects;
+function showCountries(countries) {
   countryContainer.innerHTML = ''
   countries.forEach(country => {
     const countryItem = document.createElement('button');
