@@ -30,7 +30,7 @@ darkBtn.addEventListener('click', () => {
 const countryContainer = document.getElementById('countries-container');
 const inputSearch = document.getElementById('search-input');
 const filterRegion = document.getElementById('filter-input');
-let everyCountry = []
+let everyCountry = [];
 
 inputSearch.addEventListener('input', updateCountry);
 filterRegion.addEventListener('change', updateCountry);
@@ -44,14 +44,15 @@ function getRegionFilter() {
 }
 
 function searchResults(countryInfo, term) {
- const t = term.toLowerCase().trim();
- return countryInfo.filter(c => c.names.common.toLowerCase().includes(t))
-  
+  const t = term.toLowerCase().trim();
+  return countryInfo.filter((c) => c.names.common.toLowerCase().includes(t));
 }
 
 function filterResults(countryInfo, filterOption) {
- const region = filterOption.toLowerCase().trim();
- return countryInfo.filter(item => !region || item.region?.toLowerCase() === region)
+  const region = filterOption.toLowerCase().trim();
+  return countryInfo.filter(
+    (item) => !region || item.region?.toLowerCase() === region,
+  );
 }
 
 function updateCountry() {
@@ -63,37 +64,36 @@ function updateCountry() {
   showCountries(searchedResults);
 }
 
-
 const fetchCountries = async () => {
- const url = 'https://api.restcountries.com/countries/v5';
- try {
-  let offset = 0;
-  let more = true;
-  everyCountry = [];
+  const url = 'https://api.restcountries.com/countries/v5';
+  try {
+    let offset = 0;
+    let more = true;
+    everyCountry = [];
 
-  while (more) {
-    const response = await fetch(`${url}?limit=100&offset=${offset}`, {
-      headers: { Authorization: `Bearer ${api_Key}` },
-    });
-  
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    while (more) {
+      const response = await fetch(`${url}?limit=100&offset=${offset}`, {
+        headers: { Authorization: `Bearer ${api_Key}` },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const json = await response.json();
+      everyCountry.push(...json.data.objects);
+      more = json.data.meta.more;
+      offset += 100;
+    }
+    updateCountry();
+  } catch (error) {
+    console.error('Error fetching country data:', error);
   }
-  const json = await response.json();
-  everyCountry.push(...json.data.objects);
-  more = json.data.meta.more;
-  offset += 100;
- }
- updateCountry();
-} catch (error) {
-  console.error('Error fetching country data:', error);
-}
-}
- //fetchCountries();
+};
+//fetchCountries();
 
 function showCountries(countries) {
-  countryContainer.innerHTML = ''
-  countries.forEach(country => {
+  countryContainer.innerHTML = '';
+  countries.forEach((country) => {
     const countryItem = document.createElement('button');
     countryItem.classList.add('country-item');
 
@@ -107,58 +107,80 @@ function showCountries(countries) {
         </div>
         `;
 
-        countryContainer.appendChild(countryItem);
+    countryContainer.appendChild(countryItem);
 
-        countryItem.addEventListener('click', () => {
-            countryContainer.style.display = 'none';
-            document.getElementById('country-info'),classList.add('show');
-            showCountryInfo(country)
-        })
+    countryItem.addEventListener('click', () => {
+      countryContainer.style.display = 'none';
+      (document.getElementById('country-info'), classList.add('show'));
+      showCountryInfo(country);
+    });
   });
 }
 
 function showCountryInfo(selectedCountry) {
-    const countryInfoContainer = document.getElementById('country-info');
+  const countryInfoContainer = document.getElementById('country-info');
 
-    countryInfoContainer.innerHTML = `
+  const c = selectedCountry;
+
+  const nativeName =
+    Object.values(c.names.native ?? {})[0]?.common ?? c.names.common;
+  const capital = c.capitals?.map((cap) => cap.name).join(', ') || 'N/A';
+  const tld = c.tlds?.[0] ?? 'N/A';
+
+  const currencies =
+    Object.values(c.currencies ?? {})
+      .map((cur) => cur.name ?? cur)
+      .join(', ') || 'N/A';
+
+  const languages =
+    (c.languages ?? [])
+      .map((l) => l.name ?? l.english_name ?? l.native_name)
+      .join(', ') || 'N/A';
+
+  const borderNames = (c.borders ?? []).map(
+    (code) =>
+      everyCountry.find(x => x.codes.alpha_3 === code)?.names.common ?? code,
+  );
+
+  countryInfoContainer.innerHTML = `
         <button id='backbtn' class='backbtn'><ion-icon name="arrow-back-outline"></ion-icon>Back</button>
 
         <div class='country-information'>
           <div class='country-flag'>        
-            <img src='${selectedCountry.flag.png}'>
+            <img src='${c.flag?.url_png ?? ''}' alt='${c.names.common} flag'>
           </div>
 
           <div class='country-details'>
-            <h1>${selectedCountry.name}</h1>
-
+            <h1>${c.names.common}</h1>
             <ul>
-              <li><strong>Native Name:</strong> ${selectedCountry.nativeName}</li>
-              <li><strong>Population:</strong> ${selectedCountry.population.toLocaleString()}</li>
-              <li><strong>Region:</strong> ${selectedCountry.region}</li>
-              <li><strong>Sub Region:</strong> ${selectedCountry.subregion}</li>
-              <li><strong>Capital:</strong> ${selectedCountry.capital}</li>
-              <li><strong>Top Level Domain:</strong> ${selectedCountry.topLevelDomain[0]}</li> 
-              <li><strong>Currency:</strong> ${selectedCountry.currencies[0].name}</li>
-              <li><strong>Languages:</strong> ${selectedCountry.languages.map(language => language.name).join(' ')}</li>          
+              <li><strong>Native Name:</strong> ${nativeName}</li>
+              <li><strong>Population:</strong> ${c.population?.toLocaleString() ?? 'N/A'}</li>
+              <li><strong>Region:</strong> ${c.region}</li>
+              <li><strong>Sub Region:</strong> ${c.subregion ?? 'N/A'}</li>
+              <li><strong>Capital:</strong> ${capital}</li>
+              <li><strong>Top Level Domain:</strong> ${tld}</li> 
+              <li><strong>Currency:</strong> ${currencies}</li>
+              <li><strong>Languages:</strong> ${languages}</li>          
             </ul>
 
-            ${selectedCountry.borders && selectedCountry.borders.length > 0 ?
-              `
-              <div class='country-borders'><strong>Border Countries:</strong> ${selectedCountry.borders.map(country => `<span>${country}</span>`).join(' ')}</div>
-              `:
-              `
-              <div><strong>Border Countries</strong> None</div>
-              `
-            }
+        
+              
+              <div class='country-borders'>
+              <strong>Border Countries:</strong>
+              ${borderNames.length ? borderNames.map((n) => `<span>${n}</span>`).join(' ') : 'None'}
+              
+              
+
+              </div>
           </div>
         </div>
-      `
-      const backBtn = countryInfoContainer.querySelector('#backbtn')
-      backBtn.addEventListener('click', () => {
-        countryInfoContainer.innerHTML = '';
-        countryInfoContainer.classList.remove('show')
-        countryContainer.style.display = 'grid'
-      })
+      `;
+  const backBtn = countryInfoContainer.querySelector('#backbtn');
+  backBtn.addEventListener('click', () => {
+    countryInfoContainer.innerHTML = '';
+    countryInfoContainer.classList.remove('show');
+    countryContainer.style.display = 'grid';
+  });
 }
 
-fetchCountries()
+fetchCountries();

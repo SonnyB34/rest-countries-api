@@ -17,7 +17,7 @@
     --text: hsl(0, 0%, 100%);
     --elements: hsl(209, 23%, 22%);
     --inputs: hsl(0, 0%, 100%);
-}
+    }
 
 img {
     max-width: 100%;
@@ -92,4 +92,52 @@ select#fliter-input {
     box-shadow: 0 0 5px var(--inputs);
     border: 0;
     outline: 1px solid var(--bg);
+}
+
+.countries-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 4rem;
+}
+
+.countries-container .country-item {
+    cursor: pointer;
+    background-color: var(--elements);
+    box-shadow: 0 0 5px var(--inputs);
+    color: var(--text);
+    border: 0;
+    border-radius: .37rem;
+    overflow: hidden;
+}
+
+.countries-container .country-item img {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 1rem;
+}
+
+.countries-container .country-item .country-info {
+    padding: 1rem 1.5rem 2.5rem 1.5rem;
+    text-align: left;
+}
+
+.countries-container .country-item .country-info h2 {
+    margin-bottom: 1rem;
+}
+
+.countries-container .country-item .country-info p {
+    margin-bottom: .5rem;
+}
+
+.country-details {
+    display: none;
+}
+
+.country-details.show {
+    display: block;
+}
+
+.country-details .back-btn {
+    cursor: pointer;
+    background-color: var(--elements);
 }
