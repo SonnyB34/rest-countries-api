@@ -1,5 +1,5 @@
-import { api_Key } from './secret.js';
 
+const API_KEY = process.env.API_KEY;
 const darkBtn = document.getElementById('dark-btn');
 const currentMode = localStorage.getItem('mode');
 
@@ -89,7 +89,7 @@ const fetchCountries = async () => {
     console.error('Error fetching country data:', error);
   }
 };
-//fetchCountries();
+
 
 function showCountries(countries) {
   countryContainer.innerHTML = '';
@@ -111,7 +111,7 @@ function showCountries(countries) {
 
     countryItem.addEventListener('click', () => {
       countryContainer.style.display = 'none';
-      (document.getElementById('country-info'), classList.add('show'));
+      (document.getElementById('country-info').classList.add('show'));
       showCountryInfo(country);
     });
   });
@@ -151,8 +151,7 @@ function showCountryInfo(selectedCountry) {
           </div>
 
           <div class='country-details'>
-            <h1>${c.names.common}</h1>
-            <ul>
+            <h1>${c.names.common}</h1><ul>
               <li><strong>Native Name:</strong> ${nativeName}</li>
               <li><strong>Population:</strong> ${c.population?.toLocaleString() ?? 'N/A'}</li>
               <li><strong>Region:</strong> ${c.region}</li>
@@ -181,6 +180,10 @@ function showCountryInfo(selectedCountry) {
     countryInfoContainer.classList.remove('show');
     countryContainer.style.display = 'grid';
   });
+
+ 
 }
 
+
 fetchCountries();
+
