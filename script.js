@@ -1,4 +1,4 @@
-const api_Key = process.env.api_Key;
+import { api_Key } from './secret.js'
 
 const darkBtn = document.getElementById('dark-btn');
 const currentMode = localStorage.getItem('mode');
