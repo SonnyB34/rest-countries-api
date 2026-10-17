@@ -1,5 +1,5 @@
+const api_Key = process.env.api_Key;
 
-const API_KEY = process.env.API_KEY;
 const darkBtn = document.getElementById('dark-btn');
 const currentMode = localStorage.getItem('mode');
 
